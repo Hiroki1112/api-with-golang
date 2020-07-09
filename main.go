@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"fmt"
 
-    "github.com/gorilla/mux"
+    "github.com/gorilla/mux"//ルーティング用ライブラリ
 )
 
 
@@ -76,7 +76,22 @@ func updateArticle(w http.ResponseWriter, r *http.Request) {
 }
 
 func removeArticle(w http.ResponseWriter, r *http.Request) {
-    log.Println("Remove article is called")
+	log.Println("Remove article is called")
+	
+	params := mux.Vars(r)
+	fmt.Println("params: ",params)
+
+	id,_ := strconv.Atoi(params['id'])
+	fmt.Println("id: ",id)
+	
+	fmt.Println("articles: ", articles)
+
+    for i, item := range articles {
+        if item.ID == id {
+            articles = append(articles[:i], articles[i+1:]...)
+        }
+    }
+    json.NewEncoder(w).Encode(articles)
 }
 
 
@@ -92,7 +107,7 @@ func main() {
         Article{ID: 5, Title: "Article5", Author: "Gopher", PostDate: "2019/5/5"},
     )*/
 
-	//エンドポイント
+	//エンドポイント,ハンドラ？
 	router.HandleFunc("/articles",getArticles).Methods("GET")
 	router.HandleFunc("/articles/{id}",getArticle).Methods("GET")
 	router.HandleFunc("/articles",addArticle).Methods("POST")
